@@ -1,4 +1,4 @@
-import gremlin from "./lib/queryBuilders/index.js";
+import gremlin from "./lib/index.js";
 
 (() => {
     // g.V('123').as('a').out('knows').as('b')

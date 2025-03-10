@@ -1,12 +1,5 @@
 import gremlin from "./lib/queryBuilders/index.js";
 
-/**
- * Returns a new query builder object.
- * 
- * @type {QueryBuilder} A new query builder object.
- */
-
-
 (() => {
     // g.V('123').as('a').out('knows').as('b')
     const query = gremlin()
@@ -14,6 +7,7 @@ import gremlin from "./lib/queryBuilders/index.js";
         .out('knows').as('b')
         .toString;
 
+    // g.V('123').as('a').out('knows').as('b')
     const query1 = gremlin().push('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')')
         .toString;
 

@@ -17,7 +17,7 @@ import Gremlin from "./gremlin.js";
 
     const qb2 = new Gremlin();
     const query2 = qb2.g.V('123').as('vertex').project([
-        ['name', new Gremlin(qb2.config).select('vertex').in('knows').values('name').toString],
+        ['name', new Gremlin(qb2.config).select('alvin').in('knows').values('micky').toString],
         ['age', new Gremlin(qb2.config).select('vertex').in('likes').values('age').fold().toString],
     ]).raw;
 

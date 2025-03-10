@@ -1,14 +1,4 @@
-
-
-/**
- * Checks if the given string ends with an opening parenthesis.
- * 
- * @param {String} str The string to be checked.
- * @returns {String} Returns an empty string if `str` ends with '(', otherwise returns a dot '.'.
- */
-function checkDot(str = '') {
-    return str.endsWith('(') || str.endsWith('.') || str.length === 0 ? '' : '.';
-}
+import { V, checkDot } from './lib/queryBuilders/index.js';
 
 /**
  * Typedef for the query builder object.
@@ -41,10 +31,7 @@ function gremlin() {
         get toString() {
             return this.query;
         },
-        V: function (id = '') {
-            this.query += `${checkDot(this.query)}V('${id}')`;
-            return this;
-        },
+        V: V,
         E: function (id = '') {
             this.query += `${checkDot(this.query)}E('${id}')`;
             return this;

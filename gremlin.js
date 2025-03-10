@@ -1,6 +1,12 @@
 import checkDot from "./lib/checkDot.js";
 
 class Gremlin {
+    query;
+    _aliases;
+    _edges;
+    _disableAliases;
+    _disableEdges;
+
     constructor(config = {}) {
         this.query = '';
         this._aliases = config.aliases ? new Set(config.aliases) : new Set();
@@ -28,7 +34,7 @@ class Gremlin {
     }
 
     get raw() {
-        return this.query.replace(/\)./g, ').\n');
+        return this.query.replace(/\)\./g, ').\n');
     }
 
     _addAlias(alias = '') {
@@ -67,6 +73,11 @@ class Gremlin {
     E(edge = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}E('${edge}')`;
+        return this;
+    }
+
+    fold(options = null) {
+        this.query += `${checkDot(this.query)}fold()`;
         return this;
     }
 

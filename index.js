@@ -1,16 +1,27 @@
-import gremlin from "./gremlin.js";
+import Gremlin from "./gremlin.js";
 
 (() => {
+    const edges = ['knows', 'likes'];
     // g.V('123').as('a').out('knows').as('b')
-    const query = gremlin()
+    const qb = new Gremlin({ edges });
+    const query = qb
         .g.V('123').as('a')
-        .out('knows').as('b')
+        .out('knows').as('b').select('a').custom(
+            new Gremlin(qb.config).select('a').toString
+        )
         .toString;
 
     // g.V('123').as('a').out('knows').as('b')
-    const query1 = gremlin().push('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')')
+    const query1 = new Gremlin().custom('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')')
         .toString;
 
-    console.log(query);
-    console.log(query1);
+    const qb2 = new Gremlin();
+    const query2 = qb2.g.V('123').as('vertex').project([
+        ['name', new Gremlin(qb2.config).select('vertex').in('knows').values('name').toString],
+        ['age', new Gremlin(qb2.config).select('vertex').in('likes').values('age').toString],
+    ]).raw;
+
+    // console.log(query);
+    // console.log(query1);
+    console.log(query2);
 })();

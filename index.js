@@ -1,4 +1,4 @@
-import gremlin from "./lib/index.js";
+import gremlin from "./gremlin.js";
 
 (() => {
     // g.V('123').as('a').out('knows').as('b')

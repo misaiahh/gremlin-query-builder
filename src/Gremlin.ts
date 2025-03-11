@@ -73,6 +73,12 @@ class Gremlin {
         }
     }
 
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
+    and(queryString: string = '') {
+        this.query += `${checkDot(this.query)}and(${queryString})`;
+        return this;
+    }
+
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#as-step */
     as(name: string = '') {
         this._addAlias(name);
@@ -135,6 +141,12 @@ class Gremlin {
     inE(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}inE('${edge}')`;
+        return this;
+    }
+
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
+    inV(id: string = '') {
+        this.query += `${checkDot(this.query)}inV('${id}')`;
         return this;
     }
 

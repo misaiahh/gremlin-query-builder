@@ -1,5 +1,5 @@
-import checkDot from "./lib/checkDot.js";
-import Config from "./lib/interfaces/gremlinConfig.js";
+import checkDot from "./lib/checkDot.ts";
+import { Config } from "./lib/interfaces/gremlinConfig.ts";
 
 class Gremlin {
     query: string;

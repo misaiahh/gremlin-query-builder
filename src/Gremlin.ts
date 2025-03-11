@@ -1,18 +1,19 @@
 import checkDot from "./lib/checkDot.js";
+import Config from "./lib/interfaces/gremlinConfig.js";
 
 class Gremlin {
-    query;
-    _aliases;
-    _edges;
-    _disableAliases;
-    _disableEdges;
+    query: string;
+    private _aliases: Set<string>;
+    private _edges: Set<string>;
+    private _disableAliases: boolean;
+    private _disableEdges: boolean;
 
-    constructor(config = {}) {
+    constructor(config: Config = {}) {
         this.query = '';
         this._aliases = config.aliases ? new Set(config.aliases) : new Set();
         this._edges = config.edges ? new Set(config.edges) : new Set();
-        this._disableAliases = config.disableAliases || this._aliases.size || true;
-        this._disableEdges = config.disableEdges || this._edges.size || true;
+        this._disableAliases = config.disableAliases ?? true;
+        this._disableEdges = config.disableEdges ?? true;
     }
 
     get g() {
@@ -37,7 +38,7 @@ class Gremlin {
         return this.query.replace(/\)\./g, ').\n');
     }
 
-    _addAlias(alias = '') {
+    private _addAlias(alias: string = '') {
         if (!this._disableAliases) return;
         if (this._aliases.has(alias)) {
             throw new Error(`Alias '${alias}' is already defined`);
@@ -45,7 +46,7 @@ class Gremlin {
         this._aliases.add(alias);
     }
 
-    _validateEdge(edge = '') {
+    private _validateEdge(edge: string = '') {
         if (this._disableEdges) return;
         console.log(this._edges);
         if (!this._edges.has(edge)) {
@@ -53,24 +54,24 @@ class Gremlin {
         }
     }
 
-    _validateAlias(alias = '') {
+    private _validateAlias(alias: string = '') {
         if (this._disableAliases && !this._aliases.has(alias)) {
             throw new Error(`Alias '${alias}' was not found`);
         }
     }
 
-    as(name = '') {
+    as(name: string = '') {
         this._addAlias(name);
         this.query += `${checkDot(this.query)}as('${name}')`;
         return this;
     }
 
-    custom(queryString = '') {
+    custom(queryString: string = '') {
         this.query += `${checkDot(this.query)}${queryString}`;
         return this;
     }
 
-    E(edge = '') {
+    E(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}E('${edge}')`;
         return this;
@@ -81,31 +82,31 @@ class Gremlin {
         return this;
     }
 
-    in(edge = '') {
+    in(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}in('${edge}')`;
         return this;
     }
 
-    inE(edge = '') {
+    inE(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}inE('${edge}')`;
         return this;
     }
 
-    out(edge = '') {
+    out(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}out('${edge}')`;
         return this;
     }
 
-    outE(edge = '') {
+    outE(edge: string = '') {
         this._validateEdge(edge);
         this.query += `${checkDot(this.query)}outE('${edge}')`;
         return this;
     }
 
-    project(parts = []) {
+    project(parts: [partA: string, partB: string][] = []) {
         this.query += `${checkDot(this.query)}project(` +
             `${parts.map(([partA, _]) => `'${partA}'`)}` +
             `)` +
@@ -113,18 +114,18 @@ class Gremlin {
         return this;
     }
 
-    select(alias = '') {
+    select(alias: string = '') {
         this._validateAlias(alias);
         this.query += `${checkDot(this.query)}select('${alias}')`;
         return this;
     }
 
-    V(id = '') {
+    V(id: string = '') {
         this.query += `${checkDot(this.query)}V('${id}')`;
         return this;
     }
 
-    values(value = '') {
+    values(value: string = '') {
         this.query += `${checkDot(this.query)}values('${value}')`;
         return this;
     }

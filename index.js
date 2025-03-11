@@ -1,4 +1,4 @@
-import Gremlin from "./gremlin.js";
+import Gremlin from "./dist/index.js";
 
 (() => {
     const edges = ['knows', 'likes', 'alvin'];

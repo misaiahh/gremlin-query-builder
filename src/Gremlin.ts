@@ -38,6 +38,15 @@ class Gremlin {
     }
 
     /**
+     * __ - Spawns anonymous DefaultSocialTraversal instances.
+     * @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#traversal
+     */
+    get __() {
+        this.query += `__.`;
+        return this;
+    }
+
+    /**
      * Adds an alias to the list of available aliases.
      */
     private _addAlias(alias: string = '') {
@@ -66,11 +75,12 @@ class Gremlin {
             throw new Error(`Edge '${edge}' was not found`);
         }
     }
-    
+
     /**
      * Validates if the provided alias exists within the set of aliases.
      * If alias validation is disabled, the function returns immediately.
      * Throws an error if the alias is not found in the set.
+     * @todo add check to make sure the alias does not already exist
      */
     private _validateAlias(alias: string = '') {
         if (this._disableAliases && !this._aliases.has(alias)) {
@@ -78,17 +88,8 @@ class Gremlin {
         }
     }
 
-    /**
-     * __ - Spawns anonymous DefaultSocialTraversal instances.
-     * @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#traversal
-     */
-    __(queryString: string = '') {
-        this.query += `__.${queryString}`;
-        return this;
-    }
-
     aggregate(alias: string = '') {
-        this._validateAlias(alias);
+        this._addAlias(alias);
         this.query += `${this._dot()}aggregate('${alias}')`;
         return this;
     }

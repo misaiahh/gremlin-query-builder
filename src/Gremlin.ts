@@ -73,6 +73,21 @@ class Gremlin {
         }
     }
 
+    /**
+     * __ - Spawns anonymous DefaultSocialTraversal instances.
+     * @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#traversal
+     */
+    __(queryString: string = '') {
+        this.query += `__.${queryString}`;
+        return this;
+    }
+
+    aggregate(alias: string = '') {
+        this._validateAlias(alias);
+        this.query += `${checkDot(this.query)}aggregate('${alias}')`;
+        return this;
+    }
+
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
     and(queryString: string = '') {
         this.query += `${checkDot(this.query)}and(${queryString})`;
@@ -195,6 +210,18 @@ class Gremlin {
     select(alias: string = '') {
         this._validateAlias(alias);
         this.query += `${checkDot(this.query)}select('${alias}')`;
+        return this;
+    }
+
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#sideeffect-step */
+    sideEffect(queryString: string = '') {
+        this.query += `${checkDot(this.query)}sideEffect(${queryString})`;
+        return this;
+    }
+
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#unfold-step */
+    unfold() {
+        this.query += `${checkDot(this.query)}unfold()`;
         return this;
     }
 

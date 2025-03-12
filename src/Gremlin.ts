@@ -134,6 +134,13 @@ class Gremlin {
         return this;
     }
 
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#elementmap-step */
+    elementMap(keys: string[] = []) {
+        this.query += keys.length === 0 ? `${this._dot()}elementMap()` : `${this._dot()}elementMap(${keys.join(', ')})`;
+
+        return this;
+    }
+
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#fold-step */
     fold(obj = null, bifunction = null) {
         this.query += `${this._dot()}fold()`;

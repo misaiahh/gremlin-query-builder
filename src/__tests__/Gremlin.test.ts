@@ -41,4 +41,16 @@ test('Gremlin class', async (t) => {
         gremlin.g.V('123').as('a').out('knows').as('b').select('a');
         assert.strictEqual(gremlin.raw, "g.V('123').\nas('a').\nout('knows').\nas('b').\nselect('a')");
     });
+
+    await t.test('should generate a string has', () => {
+        const gremlin = new Gremlin();
+        gremlin.g.V('123').has('name', 'Alice').toString;
+        assert.strictEqual(gremlin.toString, "g.V('123').has('name','Alice')");
+    });
+
+    await t.test('should generate a boolean has', () => {
+        const gremlin = new Gremlin();
+        gremlin.g.V('123').has('name', false);
+        assert.strictEqual(gremlin.toString, "g.V('123').has('name',false)");
+    });
 });

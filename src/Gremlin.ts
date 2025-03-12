@@ -148,7 +148,7 @@ class Gremlin {
     }
 
     has(key: string = '', value: any = true) {
-        this.query += `${this._dot()}has('${key}', ${value})`;
+        this.query += `${this._dot()}has('${key}', ${typeof value === 'boolean' ? value : `'${value}'`})`;
         return this;
     }
 

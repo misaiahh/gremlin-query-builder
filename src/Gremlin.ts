@@ -95,8 +95,8 @@ class Gremlin {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
-    and(queryString: string = '') {
-        this.query += `${this._dot()}and(${queryString})`;
+    and(steps: string[] = []) {
+        this.query += `${this._dot()}and(${steps.join(', ')})`;
         return this;
     }
 

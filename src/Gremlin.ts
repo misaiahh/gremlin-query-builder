@@ -1,4 +1,3 @@
-import checkDot from "./lib/checkDot.ts";
 import { Config } from "./lib/interfaces/gremlinConfig.ts";
 
 class Gremlin {
@@ -50,6 +49,13 @@ class Gremlin {
     }
 
     /**
+     * Returns a period if the query does not end with a parenthesis, dot, or if the query is empty.
+     */
+    private _dot() {
+        return this.query.endsWith('(') || this.query.endsWith('.') || this.query.length === 0 ? '' : '.';
+    }
+
+    /**
      * Validates if the provided edge exists within the set of edges.
      * If edge validation is disabled, the function returns immediately.
      * Throws an error if the edge is not found in the set.
@@ -60,7 +66,6 @@ class Gremlin {
             throw new Error(`Edge '${edge}' was not found`);
         }
     }
-
     
     /**
      * Validates if the provided alias exists within the set of aliases.
@@ -84,26 +89,26 @@ class Gremlin {
 
     aggregate(alias: string = '') {
         this._validateAlias(alias);
-        this.query += `${checkDot(this.query)}aggregate('${alias}')`;
+        this.query += `${this._dot()}aggregate('${alias}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
     and(queryString: string = '') {
-        this.query += `${checkDot(this.query)}and(${queryString})`;
+        this.query += `${this._dot()}and(${queryString})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#as-step */
     as(name: string = '') {
         this._addAlias(name);
-        this.query += `${checkDot(this.query)}as('${name}')`;
+        this.query += `${this._dot()}as('${name}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#count-step */
     count() {
-        this.query += `${checkDot(this.query)}count()`;
+        this.query += `${this._dot()}count()`;
         return this;
     }
 
@@ -111,95 +116,95 @@ class Gremlin {
      * Append a custom Gremlin query string to the builder.
      */
     custom(queryString: string = '') {
-        this.query += `${checkDot(this.query)}${queryString}`;
+        this.query += `${this._dot()}${queryString}`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#dedup-step */
     dedup() {
-        this.query += `${checkDot(this.query)}dedup()`;
+        this.query += `${this._dot()}dedup()`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#e-step */
     E(edge: string = '') {
         this._validateEdge(edge);
-        this.query += `${checkDot(this.query)}E('${edge}')`;
+        this.query += `${this._dot()}E('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#fold-step */
     fold(obj = null, bifunction = null) {
-        this.query += `${checkDot(this.query)}fold()`;
+        this.query += `${this._dot()}fold()`;
         return this;
     }
 
     has(key: string = '', value: any = true) {
-        this.query += `${checkDot(this.query)}has('${key}', ${value})`;
+        this.query += `${this._dot()}has('${key}', ${value})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#id-step */
     id() {
-        this.query += `${checkDot(this.query)}id()`;
+        this.query += `${this._dot()}id()`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     in(edge: string = '') {
         this._validateEdge(edge);
-        this.query += `${checkDot(this.query)}in('${edge}')`;
+        this.query += `${this._dot()}in('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     inE(edge: string = '') {
         this._validateEdge(edge);
-        this.query += `${checkDot(this.query)}inE('${edge}')`;
+        this.query += `${this._dot()}inE('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     inV(id: string = '') {
-        this.query += `${checkDot(this.query)}inV('${id}')`;
+        this.query += `${this._dot()}inV('${id}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#is-step */
     is(queryString: string = '') {
-        this.query += `${checkDot(this.query)}is(${queryString})`;
+        this.query += `${this._dot()}is(${queryString})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#not-step */
     not(queryString: string = '') {
-        this.query += `${checkDot(this.query)}not(${queryString})`;
+        this.query += `${this._dot()}not(${queryString})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     out(edge: string = '') {
         this._validateEdge(edge);
-        this.query += `${checkDot(this.query)}out('${edge}')`;
+        this.query += `${this._dot()}out('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     outE(edge: string = '') {
         this._validateEdge(edge);
-        this.query += `${checkDot(this.query)}outE('${edge}')`;
+        this.query += `${this._dot()}outE('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     outV() {
-        this.query += `${checkDot(this.query)}outV()`;
+        this.query += `${this._dot()}outV()`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#project-step */
     project(parts: [partA: string, partB: string][] = []) {
-        this.query += `${checkDot(this.query)}project(` +
+        this.query += `${this._dot()}project(` +
             `${parts.map(([partA, _]) => `'${partA}'`)}` +
             `)` +
             `${parts.map(([_, partB]) => `.by(${partB})`).join('')}`;
@@ -209,37 +214,37 @@ class Gremlin {
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#select-step */
     select(alias: string = '') {
         this._validateAlias(alias);
-        this.query += `${checkDot(this.query)}select('${alias}')`;
+        this.query += `${this._dot()}select('${alias}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#sideeffect-step */
     sideEffect(queryString: string = '') {
-        this.query += `${checkDot(this.query)}sideEffect(${queryString})`;
+        this.query += `${this._dot()}sideEffect(${queryString})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#unfold-step */
     unfold() {
-        this.query += `${checkDot(this.query)}unfold()`;
+        this.query += `${this._dot()}unfold()`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#v-step */
     V(id: string = '') {
-        this.query += `${checkDot(this.query)}V('${id}')`;
+        this.query += `${this._dot()}V('${id}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#values-step */
     values(value: string = '') {
-        this.query += `${checkDot(this.query)}values('${value}')`;
+        this.query += `${this._dot()}values('${value}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#where-step */
     where(queryString: string = '') {
-        this.query += `${checkDot(this.query)}where(${queryString})`;
+        this.query += `${this._dot()}where(${queryString})`;
         return this;
     }
 }

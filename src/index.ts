@@ -1,5 +1,5 @@
-import Builder from "./Builder.ts";
-import { Config } from "./lib/interfaces/Config.ts";
+import Factory, { Builder } from "./Builder.ts";
+import { FactoryConfig, BuilderConfig } from "./lib/interfaces/Config.ts";
 
-export default Builder;
-export { Config };
+export { Builder, Factory };
+export { FactoryConfig, BuilderConfig };

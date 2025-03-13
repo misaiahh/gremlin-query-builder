@@ -1,22 +1,41 @@
-import { Config } from "./lib/interfaces/Config.ts";
+import { FactoryConfig, BuilderConfig } from "./lib/interfaces/Config.ts";
 
-class Builder {
-    query: string;
-    aliases: Set<string>;
-    edges: Set<string>;
-    disableAliases: boolean;
+class Factory {
+    edges: string[];
     disableEdges: boolean;
 
-    constructor(config: Config = {}) {
+    constructor(config: FactoryConfig | undefined = undefined) {
+        this.edges = config?.edges ? config.edges : [];
+        this.disableEdges = config?.disableEdges ?? true;
+    }
+
+    get config() {
+        return {
+            edges: [...this.edges],
+            disableEdges: this.disableEdges,
+        };
+    }
+
+    create(config: BuilderConfig & FactoryConfig | undefined = undefined) {
+        return new Builder(config, this);
+    }
+}
+
+export class Builder {
+    query: string;
+    aliases: string[];
+    disableAliases: boolean;
+    private factory: Factory;
+
+    constructor(config: BuilderConfig | undefined = undefined, factory: Factory | undefined = undefined) {
+        this.factory = factory ?? new Factory();
         this.query = '';
-        this.aliases = config.aliases ? new Set(config.aliases) : new Set();
-        this.edges = config.edges ? new Set(config.edges) : new Set();
-        this.disableAliases = config.disableAliases ?? true;
-        this.disableEdges = config.disableEdges ?? true;
+        this.aliases = config?.aliases ? config.aliases : [];
+        this.disableAliases = config?.disableAliases ?? true;
     }
 
     static from(builder: Builder | undefined = undefined): Builder {
-        return new Builder(builder?.config);
+        return new Builder(builder?.config, builder?.factory);
     }
 
     get g() {
@@ -24,12 +43,12 @@ class Builder {
         return this;
     }
 
-    get config() {
+    get config(): BuilderConfig & FactoryConfig {
         return {
             aliases: [...this.aliases],
-            edges: [...this.edges],
+            edges: [...this.factory.edges],
             disableAliases: this.disableAliases,
-            disableEdges: this.disableEdges,
+            disableEdges: this.factory.disableEdges,
         };
     }
 
@@ -55,10 +74,10 @@ class Builder {
      */
     _addAlias(alias: string = '') {
         if (!this.disableAliases) return;
-        if (this.aliases.has(alias)) {
+        if (this.aliases.includes(alias)) {
             throw new Error(`Alias '${alias}' is already defined`);
         }
-        this.aliases.add(alias);
+        this.aliases.push(alias);
     }
 
     /**
@@ -74,8 +93,8 @@ class Builder {
      * Throws an error if the edge is not found in the set.
      */
     _validateEdge(edge: string = '') {
-        if (this.disableEdges) return;
-        if (!this.edges.has(edge)) {
+        if (this.factory.disableEdges) return;
+        if (!this.factory.edges.includes(edge)) {
             throw new Error(`Edge '${edge}' was not found`);
         }
     }
@@ -87,7 +106,7 @@ class Builder {
      * @todo add check to make sure the alias does not already exist
      */
     _validateAlias(alias: string = '') {
-        if (this.disableAliases && !this.aliases.has(alias)) {
+        if (this.disableAliases && !this.aliases.includes(alias)) {
             throw new Error(`Alias '${alias}' was not found`);
         }
     }
@@ -261,4 +280,4 @@ class Builder {
     }
 }
 
-export default Builder;
+export default Factory;

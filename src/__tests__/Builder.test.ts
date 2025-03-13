@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import B from '../Builder.js';
+import Factory, { Builder as B } from '../Builder.js';
 
 test('Gremlin class', async (t) => {
     await t.test('should return an instance of the Builder class', () => {
@@ -14,15 +14,16 @@ test('Gremlin class', async (t) => {
     });
 
     await t.test('should return an instance of the Builder class with existing edges', () => {
-        const existingBuilder = new B({ edges: ['knows'], disableEdges: false });
+        const factory = new Factory({ edges: ['knows'], disableEdges: false });
+        const existingBuilder = factory.create();
         const newBuilder = B.from(existingBuilder);
-        assert.strictEqual(newBuilder.edges.has('knows'), true);
+        assert.strictEqual(newBuilder.config.edges.includes('knows'), true);
     });
 
     await t.test('should return an instance of the Builder class with existing aliases', () => {
         const existingBuilder = new B({ aliases: ['V'], disableAliases: false });
         const newBuilder = B.from(existingBuilder);
-        assert.strictEqual(newBuilder.aliases.has('V'), true);
+        assert.strictEqual(newBuilder.aliases.includes('V'), true);
     });
 
     await t.test('should initialize with default values', () => {
@@ -40,9 +41,10 @@ test('Gremlin class', async (t) => {
     });
 
     await t.test('should validate edge', () => {
-        const gremlin = new B({ edges: ['knows'], disableEdges: false });
-        assert.doesNotThrow(() => gremlin.E('knows'));
-        assert.throws(() => gremlin.E('unknownEdge'), /Edge 'unknownEdge' was not found/);
+        const factory = new Factory({ edges: ['knows'], disableEdges: false });
+        const builder = factory.create();
+        assert.doesNotThrow(() => builder.E('knows'));
+        assert.throws(() => builder.E('unknownEdge'), /Edge 'unknownEdge' was not found/);
     });
 
     await t.test('should validate alias', () => {

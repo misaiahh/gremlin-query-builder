@@ -22,6 +22,10 @@ export default class Factory {
         };
     }
 
+    static from(factory: Factory | undefined = undefined) {
+        return new Builder(factory);
+    }
+
     /**
      * Validates if the provided alias exists within the set of aliases.
      * If alias validation is disabled, the function returns immediately.
@@ -47,10 +51,6 @@ export default class Factory {
 
     create() {
         return new Builder(this);
-    }
-
-    static from(factory: Factory | undefined = undefined) {
-        return new Builder(factory);
     }
 
     /**

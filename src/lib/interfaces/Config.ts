@@ -1,6 +1,9 @@
-export interface Config {
-    aliases?: string[];
-    edges?: string[];
-    disableAliases?: boolean;
-    disableEdges?: boolean;
+export interface FactoryConfig {
+    edges: string[];
+    disableEdges: boolean;
+}
+
+export interface BuilderConfig {
+    aliases: string[];
+    disableAliases: boolean;
 }

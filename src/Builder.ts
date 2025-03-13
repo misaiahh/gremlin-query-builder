@@ -1,55 +1,87 @@
-import { FactoryConfig, BuilderConfig } from "./lib/interfaces/Config.ts";
+import { FactoryConfig } from "./lib/interfaces/Config.ts";
 
-class Factory {
+export class Factory {
     edges: string[];
     disableEdges: boolean;
+    aliases: string[];
+    disableAliases: boolean;
 
     constructor(config: FactoryConfig | undefined = undefined) {
         this.edges = config?.edges ? config.edges : [];
         this.disableEdges = config?.disableEdges ?? true;
+        this.aliases = config?.aliases ? config.aliases : [];
+        this.disableAliases = config?.disableAliases ?? true;
     }
 
     get config() {
         return {
             edges: [...this.edges],
             disableEdges: this.disableEdges,
+            aliases: [...this.aliases],
+            disableAliases: this.disableAliases
         };
     }
 
-    create(config: BuilderConfig & FactoryConfig | undefined = undefined) {
-        return new Builder(config, this);
+    /**
+     * Validates if the provided alias exists within the set of aliases.
+     * If alias validation is disabled, the function returns immediately.
+     * Throws an error if the alias is not found in the set.
+     * @todo add check to make sure the alias does not already exist
+     */
+    validateAlias(alias: string = '') {
+        if (this.disableAliases && !this.aliases.includes(alias)) {
+            throw new Error(`Alias '${alias}' was not found`);
+        }
+    }
+
+    /**
+     * Adds an alias to the list of available aliases.
+     */
+    addAlias(alias: string = '') {
+        if (!this.disableAliases) return;
+        if (this.aliases.includes(alias)) {
+            throw new Error(`Alias '${alias}' is already defined`);
+        }
+        this.aliases.push(alias);
+    }
+
+    create() {
+        return new Builder(this);
+    }
+
+    /**
+     * Validates if the provided edge exists within the set of edges.
+     * If edge validation is disabled, the function returns immediately.
+     * Throws an error if the edge is not found in the set.
+     */
+    validateEdge(edge: string = '') {
+        if (this.disableEdges) return;
+        if (!this.edges.includes(edge)) {
+            throw new Error(`Edge '${edge}' was not found`);
+        }
     }
 }
 
 export class Builder {
     query: string;
-    aliases: string[];
-    disableAliases: boolean;
     private factory: Factory;
 
-    constructor(config: BuilderConfig | undefined = undefined, factory: Factory | undefined = undefined) {
+    constructor(factory: Factory | undefined = undefined) {
         this.factory = factory ?? new Factory();
         this.query = '';
-        this.aliases = config?.aliases ? config.aliases : [];
-        this.disableAliases = config?.disableAliases ?? true;
     }
 
     static from(builder: Builder | undefined = undefined): Builder {
-        return new Builder(builder?.config, builder?.factory);
+        return new Builder(builder?.factory);
+    }
+
+    get config() {
+        return this.factory.config;
     }
 
     get g() {
         this.query += 'g.';
         return this;
-    }
-
-    get config(): BuilderConfig & FactoryConfig {
-        return {
-            aliases: [...this.aliases],
-            edges: [...this.factory.edges],
-            disableAliases: this.disableAliases,
-            disableEdges: this.factory.disableEdges,
-        };
     }
 
     get toString() {
@@ -70,49 +102,15 @@ export class Builder {
     }
 
     /**
-     * Adds an alias to the list of available aliases.
-     */
-    _addAlias(alias: string = '') {
-        if (!this.disableAliases) return;
-        if (this.aliases.includes(alias)) {
-            throw new Error(`Alias '${alias}' is already defined`);
-        }
-        this.aliases.push(alias);
-    }
-
-    /**
      * Returns a period if the query does not end with a parenthesis, dot, or if the query is empty.
      */
     _dot() {
         return this.query.endsWith('(') || this.query.endsWith('.') || this.query.length === 0 ? '' : '.';
     }
 
-    /**
-     * Validates if the provided edge exists within the set of edges.
-     * If edge validation is disabled, the function returns immediately.
-     * Throws an error if the edge is not found in the set.
-     */
-    _validateEdge(edge: string = '') {
-        if (this.factory.disableEdges) return;
-        if (!this.factory.edges.includes(edge)) {
-            throw new Error(`Edge '${edge}' was not found`);
-        }
-    }
-
-    /**
-     * Validates if the provided alias exists within the set of aliases.
-     * If alias validation is disabled, the function returns immediately.
-     * Throws an error if the alias is not found in the set.
-     * @todo add check to make sure the alias does not already exist
-     */
-    _validateAlias(alias: string = '') {
-        if (this.disableAliases && !this.aliases.includes(alias)) {
-            throw new Error(`Alias '${alias}' was not found`);
-        }
-    }
 
     aggregate(alias: string = '') {
-        this._addAlias(alias);
+        this.factory.addAlias(alias);
         this.query += `${this._dot()}aggregate('${alias}')`;
         return this;
     }
@@ -125,7 +123,7 @@ export class Builder {
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#as-step */
     as(name: string = '') {
-        this._addAlias(name);
+        this.factory.addAlias(name);
         this.query += `${this._dot()}as('${name}')`;
         return this;
     }
@@ -152,7 +150,7 @@ export class Builder {
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#e-step */
     E(edge: string = '') {
-        this._validateEdge(edge);
+        this.factory.validateEdge(edge);
         this.query += `${this._dot()}E('${edge}')`;
         return this;
     }
@@ -183,14 +181,14 @@ export class Builder {
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     in(edge: string = '') {
-        this._validateEdge(edge);
+        this.factory.validateEdge(edge);
         this.query += `${this._dot()}in('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     inE(edge: string = '') {
-        this._validateEdge(edge);
+        this.factory.validateEdge(edge);
         this.query += `${this._dot()}inE('${edge}')`;
         return this;
     }
@@ -215,14 +213,14 @@ export class Builder {
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     out(edge: string = '') {
-        this._validateEdge(edge);
+        this.factory.validateEdge(edge);
         this.query += `${this._dot()}out('${edge}')`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
     outE(edge: string = '') {
-        this._validateEdge(edge);
+        this.factory.validateEdge(edge);
         this.query += `${this._dot()}outE('${edge}')`;
         return this;
     }
@@ -244,7 +242,7 @@ export class Builder {
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#select-step */
     select(alias: string = '') {
-        this._validateAlias(alias);
+        this.factory.validateAlias(alias);
         this.query += `${this._dot()}select('${alias}')`;
         return this;
     }
@@ -279,5 +277,3 @@ export class Builder {
         return this;
     }
 }
-
-export default Factory;

@@ -1,10 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import Gremlin from '../gremlin';
+import B from '../Builder.js';
 
 test('Gremlin class', async (t) => {
+    await t.test('should return an instance of the Builder class', () => {
+        const gremlin = B.build();
+        assert.strictEqual(gremlin instanceof B, true);
+    });
+
+    await t.test('should return an instance of the Builder class', () => {
+        const gremlin = B.build().g.V('123').in('knows').toString;
+        assert.strictEqual(gremlin, "g.V('123').in('knows')");
+    });
+
     await t.test('should initialize with default values', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         assert.strictEqual(gremlin.config.aliases.length, 0);
         assert.strictEqual(gremlin.config.edges.length, 0);
         assert.strictEqual(gremlin.config.disableAliases, true);
@@ -12,44 +22,44 @@ test('Gremlin class', async (t) => {
     });
 
     await t.test('should add an alias', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.as('testAlias');
         assert.strictEqual(gremlin.config.aliases.includes('testAlias'), true);
     });
 
     await t.test('should validate edge', () => {
-        const gremlin = new Gremlin({ edges: ['knows'], disableEdges: false });
+        const gremlin = new B({ edges: ['knows'], disableEdges: false });
         assert.doesNotThrow(() => gremlin.E('knows'));
         assert.throws(() => gremlin.E('unknownEdge'), /Edge 'unknownEdge' was not found/);
     });
 
     await t.test('should validate alias', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.as('testAlias');
         assert.doesNotThrow(() => gremlin.select('testAlias'));
         assert.throws(() => gremlin.select('unknownAlias'), /Alias 'unknownAlias' was not found/);
     });
 
     await t.test('should generate correct query string', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.g.V('123').as('a').out('knows').as('b').select('a');
         assert.strictEqual(gremlin.toString, "g.V('123').as('a').out('knows').as('b').select('a')");
     });
 
     await t.test('should generate raw query string with newlines', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.g.V('123').as('a').out('knows').as('b').select('a');
         assert.strictEqual(gremlin.raw, "g.V('123').\nas('a').\nout('knows').\nas('b').\nselect('a')");
     });
 
     await t.test('should generate a string has', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.g.V('123').has('name', 'Alice').toString;
         assert.strictEqual(gremlin.toString, "g.V('123').has('name','Alice')");
     });
 
     await t.test('should generate a boolean has', () => {
-        const gremlin = new Gremlin();
+        const gremlin = new B();
         gremlin.g.V('123').has('name', false);
         assert.strictEqual(gremlin.toString, "g.V('123').has('name',false)");
     });

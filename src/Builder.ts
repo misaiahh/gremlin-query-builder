@@ -1,18 +1,22 @@
-import { Config } from "./lib/interfaces/gremlinConfig.ts";
+import { Config } from "./lib/interfaces/Config.ts";
 
-class Gremlin {
+class Builder {
     query: string;
-    private _aliases: Set<string>;
-    private _edges: Set<string>;
-    private _disableAliases: boolean;
-    private _disableEdges: boolean;
+    aliases: Set<string>;
+    edges: Set<string>;
+    disableAliases: boolean;
+    disableEdges: boolean;
 
     constructor(config: Config = {}) {
         this.query = '';
-        this._aliases = config.aliases ? new Set(config.aliases) : new Set();
-        this._edges = config.edges ? new Set(config.edges) : new Set();
-        this._disableAliases = config.disableAliases ?? true;
-        this._disableEdges = config.disableEdges ?? true;
+        this.aliases = config.aliases ? new Set(config.aliases) : new Set();
+        this.edges = config.edges ? new Set(config.edges) : new Set();
+        this.disableAliases = config.disableAliases ?? true;
+        this.disableEdges = config.disableEdges ?? true;
+    }
+
+    static build(config: Config | undefined = undefined): Builder {
+        return new Builder(config);
     }
 
     get g() {
@@ -22,10 +26,10 @@ class Gremlin {
 
     get config() {
         return {
-            aliases: [...this._aliases],
-            edges: [...this._edges],
-            disableAliases: this._disableAliases,
-            disableEdges: this._disableEdges,
+            aliases: [...this.aliases],
+            edges: [...this.edges],
+            disableAliases: this.disableAliases,
+            disableEdges: this.disableEdges,
         };
     }
 
@@ -49,18 +53,18 @@ class Gremlin {
     /**
      * Adds an alias to the list of available aliases.
      */
-    private _addAlias(alias: string = '') {
-        if (!this._disableAliases) return;
-        if (this._aliases.has(alias)) {
+    _addAlias(alias: string = '') {
+        if (!this.disableAliases) return;
+        if (this.aliases.has(alias)) {
             throw new Error(`Alias '${alias}' is already defined`);
         }
-        this._aliases.add(alias);
+        this.aliases.add(alias);
     }
 
     /**
      * Returns a period if the query does not end with a parenthesis, dot, or if the query is empty.
      */
-    private _dot() {
+    _dot() {
         return this.query.endsWith('(') || this.query.endsWith('.') || this.query.length === 0 ? '' : '.';
     }
 
@@ -69,9 +73,9 @@ class Gremlin {
      * If edge validation is disabled, the function returns immediately.
      * Throws an error if the edge is not found in the set.
      */
-    private _validateEdge(edge: string = '') {
-        if (this._disableEdges) return;
-        if (!this._edges.has(edge)) {
+    _validateEdge(edge: string = '') {
+        if (this.disableEdges) return;
+        if (!this.edges.has(edge)) {
             throw new Error(`Edge '${edge}' was not found`);
         }
     }
@@ -82,8 +86,8 @@ class Gremlin {
      * Throws an error if the alias is not found in the set.
      * @todo add check to make sure the alias does not already exist
      */
-    private _validateAlias(alias: string = '') {
-        if (this._disableAliases && !this._aliases.has(alias)) {
+    _validateAlias(alias: string = '') {
+        if (this.disableAliases && !this.aliases.has(alias)) {
             throw new Error(`Alias '${alias}' was not found`);
         }
     }
@@ -257,4 +261,4 @@ class Gremlin {
     }
 }
 
-export default Gremlin;
+export default Builder;

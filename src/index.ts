@@ -1,5 +1,5 @@
-import Gremlin from "./Gremlin.ts";
-import { Config } from "./lib/interfaces/gremlinConfig.ts";
+import Builder from "./Builder.ts";
+import { Config } from "./lib/interfaces/Config.ts";
 
-export default Gremlin;
+export default Builder;
 export { Config };

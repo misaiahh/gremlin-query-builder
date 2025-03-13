@@ -15,8 +15,8 @@ class Builder {
         this.disableEdges = config.disableEdges ?? true;
     }
 
-    static build(config: Config | undefined = undefined): Builder {
-        return new Builder(config);
+    static from(builder: Builder | undefined = undefined): Builder {
+        return new Builder(builder?.config);
     }
 
     get g() {

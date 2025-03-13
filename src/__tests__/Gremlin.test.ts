@@ -4,13 +4,25 @@ import B from '../Builder.js';
 
 test('Gremlin class', async (t) => {
     await t.test('should return an instance of the Builder class', () => {
-        const gremlin = B.build();
+        const gremlin = B.from();
         assert.strictEqual(gremlin instanceof B, true);
     });
 
     await t.test('should return an instance of the Builder class', () => {
-        const gremlin = B.build().g.V('123').in('knows').toString;
+        const gremlin = B.from().g.V('123').in('knows').toString;
         assert.strictEqual(gremlin, "g.V('123').in('knows')");
+    });
+
+    await t.test('should return an instance of the Builder class with existing edges', () => {
+        const existingBuilder = new B({ edges: ['knows'], disableEdges: false });
+        const newBuilder = B.from(existingBuilder);
+        assert.strictEqual(newBuilder.edges.has('knows'), true);
+    });
+
+    await t.test('should return an instance of the Builder class with existing aliases', () => {
+        const existingBuilder = new B({ aliases: ['V'], disableAliases: false });
+        const newBuilder = B.from(existingBuilder);
+        assert.strictEqual(newBuilder.aliases.has('V'), true);
     });
 
     await t.test('should initialize with default values', () => {

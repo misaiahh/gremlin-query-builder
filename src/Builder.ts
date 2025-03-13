@@ -1,6 +1,6 @@
 import { FactoryConfig } from "./lib/interfaces/Config.ts";
 
-export class Factory {
+export default class Factory {
     edges: string[];
     disableEdges: boolean;
     aliases: string[];
@@ -49,6 +49,10 @@ export class Factory {
         return new Builder(this);
     }
 
+    static from(factory: Factory | undefined = undefined) {
+        return new Builder(factory);
+    }
+
     /**
      * Validates if the provided edge exists within the set of edges.
      * If edge validation is disabled, the function returns immediately.
@@ -69,10 +73,6 @@ export class Builder {
     constructor(factory: Factory | undefined = undefined) {
         this.factory = factory ?? new Factory();
         this.query = '';
-    }
-
-    static from(builder: Builder | undefined = undefined): Builder {
-        return new Builder(builder?.factory);
     }
 
     get config() {

@@ -71,4 +71,21 @@ test('Gremlin class', async (t) => {
         gremlin.g.V('123').has('name', false);
         assert.strictEqual(gremlin.toString, "g.V('123').has('name',false)");
     });
+
+    await t.test('should not check edges if disableEdges is true', () => {
+        const gremlin = new Factory({ disableEdges: true }).create();
+        gremlin.g.V('123').E('knows');
+        assert.strictEqual(gremlin.toString, "g.V('123').E('knows')");
+    });
+
+    await t.test('should check edges if disableEdges is false', () => {
+        const gremlin = new Factory({ edges: ['knows'], disableEdges: false }).create();
+        gremlin.g.V('123').E('knows');
+        assert.strictEqual(gremlin.toString, "g.V('123').E('knows')");
+    });
+
+    await t.test('should throw an error if edge is not found', () => {
+        const gremlin = new Factory({ edges: [], disableEdges: false }).create();
+        assert.throws(() => gremlin.g.V('123').E('knows'), /Edge 'knows' was not found/);
+    });
 });

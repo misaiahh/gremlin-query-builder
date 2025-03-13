@@ -1,18 +1,38 @@
-import { Config } from "./lib/interfaces/Config.ts";
+import { FactoryConfig, BuilderConfig } from "./lib/interfaces/Config.ts";
+
+class Factory {
+    edges: Set<string>;
+    disableEdges: boolean;
+
+    constructor(config: FactoryConfig = {}) {
+        this.edges = config.edges ? new Set(config.edges) : new Set();
+        this.disableEdges = config.disableEdges ?? true;
+    }
+
+    get config() {
+        return {
+            edges: [...this.edges],
+            disableEdges: this.disableEdges,
+        };
+    }
+
+    create(config: BuilderConfig = {}) {
+        return new Builder(config, this);
+    }
+}
 
 class Builder {
     query: string;
     aliases: Set<string>;
-    edges: Set<string>;
     disableAliases: boolean;
-    disableEdges: boolean;
+    private factory: Factory;
 
-    constructor(config: Config = {}) {
+    constructor(config: BuilderConfig = {}, factory: Factory | undefined = undefined) {
+        this.factory = factory ?? new Factory();
         this.query = '';
         this.aliases = config.aliases ? new Set(config.aliases) : new Set();
-        this.edges = config.edges ? new Set(config.edges) : new Set();
+
         this.disableAliases = config.disableAliases ?? true;
-        this.disableEdges = config.disableEdges ?? true;
     }
 
     static from(builder: Builder | undefined = undefined): Builder {
@@ -27,9 +47,9 @@ class Builder {
     get config() {
         return {
             aliases: [...this.aliases],
-            edges: [...this.edges],
+            edges: [...this.factory.edges ?? []],
             disableAliases: this.disableAliases,
-            disableEdges: this.disableEdges,
+            disableEdges: this.factory.disableEdges,
         };
     }
 
@@ -74,8 +94,8 @@ class Builder {
      * Throws an error if the edge is not found in the set.
      */
     _validateEdge(edge: string = '') {
-        if (this.disableEdges) return;
-        if (!this.edges.has(edge)) {
+        if (this.factory.disableEdges) return;
+        if (!this.factory.edges.has(edge)) {
             throw new Error(`Edge '${edge}' was not found`);
         }
     }

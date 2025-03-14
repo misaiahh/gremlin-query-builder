@@ -63,7 +63,7 @@ test('Gremlin class', async (t) => {
     await t.test('should generate a string has', () => {
         const gremlin = new Factory().create();
         gremlin.g.V('123').has('name', 'Alice').toString;
-        assert.strictEqual(gremlin.toString, "g.V('123').has('name','Alice')");
+        assert.strictEqual(gremlin.toString, "g.V('123').has('name',Alice)");
     });
 
     await t.test('should generate a boolean has', () => {

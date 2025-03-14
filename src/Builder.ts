@@ -169,7 +169,7 @@ export class Builder {
     }
 
     has(key: string = '', value: any = true) {
-        this.query += `${this._dot()}has('${key}', ${typeof value === 'boolean' ? value : `'${value}'`})`;
+        this.query += `${this._dot()}has('${key}', ${value})`;
         return this;
     }
 

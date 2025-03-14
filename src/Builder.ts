@@ -265,6 +265,12 @@ export class Builder {
         return this;
     }
 
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#valuemap-step */
+    valueMap() {
+        this.query += `${this._dot()}valueMap()`;
+        return this;
+    }
+
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#values-step */
     values(value: string = '') {
         this.query += `${this._dot()}values('${value}')`;

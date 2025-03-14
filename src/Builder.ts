@@ -194,8 +194,8 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#vertex-steps */
-    inV(id: string = '') {
-        this.query += `${this._dot()}inV('${id}')`;
+    inV() {
+        this.query += `${this._dot()}inV()`;
         return this;
     }
 

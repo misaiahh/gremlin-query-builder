@@ -1,27 +1,26 @@
-import Gremlin from "./dist/index.js";
+import { Factory } from "./dist/index.js";
 
 (() => {
-    const edges = ['knows', 'likes', 'alvin'];
-    // g.V('123').as('a').out('knows').as('b')
-    const qb = new Gremlin({ edges });
-    const query = qb
+    const config = ['knows', 'likes', 'alvin'];
+    const f = new Factory({ edges: config, edgesDisable: false });
+
+    const query = f.create()
         .g.V('123').as('a')
         .out('knows').as('b').select('a').custom(
-            new Gremlin(qb.config).select('a').toString
+            Factory.from(f).select('a').toString
         )
         .toString;
 
-    // g.V('123').as('a').out('knows').as('b')
-    const query1 = new Gremlin().custom('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')')
+    const query1 = Factory.from().custom('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')')
         .toString;
 
-    const qb2 = new Gremlin();
-    const query2 = qb2.g.V('123').as('vertex').project([
-        ['name', new Gremlin(qb2.config).select('vertex').in('alvin').values('micky').toString],
-        ['age', new Gremlin(qb2.config).select('vertex').in('likes').values('age').fold().toString],
-    ]).raw;
+    const f2 = new Factory();
+    const query2 = f2.create().g.V('123').as('vertex').project([
+        ['name', Factory.from(f2).select('vertex').in('alvin').values('micky').toString],
+        ['age', Factory.from(f2).select('vertex').in('likes').values('age').fold().toString],
+    ]).toString;
 
-    // console.log(query);
-    // console.log(query1);
+    console.log(query);
+    console.log(query1);
     console.log(query2);
 })();

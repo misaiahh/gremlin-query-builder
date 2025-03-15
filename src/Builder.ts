@@ -11,7 +11,7 @@ export default class Factory {
         this.edges = config?.edges ? config.edges : [];
         this.disableEdges = config?.disableEdges ?? true;
         this.aliases = config?.aliases ? config.aliases : [];
-        this.disableAliases = config?.disableAliases ?? true;
+        this.disableAliases = config?.disableAliases ?? false;
     }
 
     get config() {
@@ -34,7 +34,8 @@ export default class Factory {
      * @todo add check to make sure the alias does not already exist
      */
     validateAlias(alias: string = '') {
-        if (this.disableAliases && !this.aliases.includes(alias)) {
+        if (this.disableAliases) return;
+        if (!this.aliases.includes(alias)) {
             throw new Error(`Alias '${alias}' was not found`);
         }
     }
@@ -43,7 +44,7 @@ export default class Factory {
      * Adds an alias to the list of available aliases.
      */
     addAlias(alias: string = '') {
-        if (!this.disableAliases) return;
+        if (this.disableAliases) return;
         if (this.aliases.includes(alias)) {
             throw new Error(`Alias '${alias}' is already defined`);
         }
@@ -102,7 +103,7 @@ export class Builder {
      * @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#traversal
      */
     get __() {
-        this.query += `__.`;
+        this.query += `${this._dot()}__.`;
         return this;
     }
 
@@ -113,7 +114,7 @@ export class Builder {
         return this.query.endsWith('(') || this.query.endsWith('.') || this.query.length === 0 ? '' : '.';
     }
 
-
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#aggregate-step */
     aggregate(alias: string = '') {
         this.factory.addAlias(alias);
         this.query += `${this._dot()}aggregate('${alias}')`;
@@ -121,8 +122,16 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
-    and(steps: string[] = []) {
-        this.query += `${this._dot()}and(${steps.join(', ')})`;
+    and(callback: ((builder: Builder) => void) | undefined = undefined) {
+        if (!callback) {
+            this.query += `${this._dot()}and()`;
+            return this;
+        }
+
+        const builder = Factory.from(this.factory);
+        callback(builder);
+        this.query += `${this._dot()}and(${builder.toString})`;
+
         return this;
     }
 
@@ -161,10 +170,18 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#elementmap-step */
-    elementMap(keys: string[] = []) {
-        this.query += keys.length === 0 ? `${this._dot()}elementMap()` : `${this._dot()}elementMap(${keys.join(', ')})`;
+    elementMap(keys: string[] | undefined = undefined) {
+        if (Array.isArray(keys)) {
+            this.query += `${this._dot()}elementMap(${keys.map((element) => `'${element}'`).join(', ')})`;
+            return this;
+        }
+        
+        if (!keys) {
+            this.query += `${this._dot()}elementMap()`;
+            return this;
+        }
 
-        return this;
+        throw new Error('Keys must be an array or undefined');
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#fold-step */
@@ -183,7 +200,7 @@ export class Builder {
     hasLabel(labels: string[] | string) {
         let queryString = '';
 
-        if (typeof labels === 'number') {
+        if (typeof labels === 'string') {
             queryString = `${this._dot()}hasLabel('${labels}')`;
         }
 
@@ -192,6 +209,7 @@ export class Builder {
         }
 
         this.query += queryString;
+
         return this;
     }
 
@@ -304,8 +322,10 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#where-step */
-    where(queryString: string = '') {
-        this.query += `${this._dot()}where(${queryString})`;
+    where(callback: ((builder: Builder) => void)) {
+        const builder = Factory.from(this.factory);
+        callback(builder);
+        this.query += `${this._dot()}where(${builder.toString})`;
         return this;
     }
 }

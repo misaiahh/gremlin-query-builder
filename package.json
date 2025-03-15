@@ -4,7 +4,8 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "test": "glob -c \"node --import tsx --no-warnings --test\" \"./src/__tests__/**/*.test.ts\"",
+    "test": "node --import tsx --test",
+    "test:watch": "node --import tsx --test --watch",
     "start": "npx tsc -w",
     "demo": "node index.js",
     "build": "npx tsc"

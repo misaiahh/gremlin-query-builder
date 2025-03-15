@@ -1,4 +1,5 @@
-import { FactoryConfig } from "./lib/interfaces/Config.ts";
+// https://stackoverflow.com/questions/70633940/cannot-export-interface-in-typescirpt-the-requested-module-does-not-provide-an
+import type { FactoryConfig } from "./lib/interfaces/Config.ts";
 
 export default class Factory {
     edges: string[];
@@ -49,6 +50,10 @@ export default class Factory {
         this.aliases.push(alias);
     }
 
+    /**
+     * Creates and returns a new instance of the Builder class
+     * using the current Factory instance.
+     */
     create() {
         return new Builder(this);
     }
@@ -168,8 +173,25 @@ export class Builder {
         return this;
     }
 
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#has-step */
     has(key: string = '', value: any = true) {
         this.query += `${this._dot()}has('${key}', ${value})`;
+        return this;
+    }
+
+    /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#has-step */
+    hasLabel(labels: string[] | string) {
+        let queryString = '';
+
+        if (typeof labels === 'number') {
+            queryString = `${this._dot()}hasLabel('${labels}')`;
+        }
+
+        if (Array.isArray(labels)) {
+            queryString = `${this._dot()}hasLabel(${labels.map((label) => `'${label}'`).join(',')})`;
+        }
+
+        this.query += queryString;
         return this;
     }
 
@@ -200,14 +222,16 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#is-step */
-    is(queryString: string = '') {
-        this.query += `${this._dot()}is(${queryString})`;
+    is(operator: string | number) {
+        this.query += `${this._dot()}is(${operator})`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#not-step */
-    not(queryString: string = '') {
-        this.query += `${this._dot()}not(${queryString})`;
+    not(callback: (builder: Builder) => void) {
+        const builder = Factory.from(this.factory);
+        callback(builder);
+        this.query += `${this._dot()}not(${builder.toString})`;
         return this;
     }
 
@@ -248,8 +272,10 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#sideeffect-step */
-    sideEffect(queryString: string = '') {
-        this.query += `${this._dot()}sideEffect(${queryString})`;
+    sideEffect(callback: (builder: Builder) => void) {
+        const builder = Factory.from(this.factory);
+        callback(builder);
+        this.query += `${this._dot()}sideEffect(${builder.toString})`;
         return this;
     }
 

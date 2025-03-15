@@ -335,14 +335,34 @@ describe('Gremlin Query Builder', () => {
         describe('project()', () => {
             it('should generate a single project', () => {
                 const builder = new Factory().create();
-                builder.g.V('123').project([['a', 'b']]);
-                assert.strictEqual(builder.toString, "g.V('123').project('a').by(b)");
+                builder.g.V('123').project([{ to: 'a', by: (b) => b.valueMap() }]);
+                assert.strictEqual(builder.toString, "g.V('123').project('a').by(valueMap())");
+            });
+
+            it('should generate a single by project that works with as()', () => {
+                const builder = new Factory().create();
+                builder.g.V('123').as('V').project([{ to: 'a', by: (b) => b.select('V').valueMap() }]);
+                assert.strictEqual(builder.toString, "g.V('123').as('V').project('a').by(select('V').valueMap())");
             });
 
             it('should generate a multiple project', () => {
                 const builder = new Factory().create();
-                builder.g.V('123').project([['a', 'b'], ['c', 'd']]);
-                assert.strictEqual(builder.toString, "g.V('123').project('a','c').by(b).by(d)");
+                builder.g.V('123').project([{ to: 'a', by: (b) => b.valueMap() }, { to: 'c', by: (d) => d.valueMap() }]);
+                assert.strictEqual(builder.toString, "g.V('123').project('a','c').by(valueMap()).by(valueMap())");
+            });
+
+            it('should generate multiple by project that works with as()', () => {
+                const builder = new Factory().create();
+                builder.g.V('123').as('V').project([
+                    { to: 'a', by: (b) => b.select('V').valueMap() },
+                    { to: 'c', by: (d) => d.select('V').valueMap() }
+                ]);
+                assert.strictEqual(builder.toString, "g.V('123').as('V').project('a','c').by(select('V').valueMap()).by(select('V').valueMap())");
+            });
+
+            it('should throw an error if parts is not an array', () => {
+                const builder = new Factory().create();
+                assert.throws(() => builder.g.V('123').project('a'), /Parts must be an array/);
             });
         });
 

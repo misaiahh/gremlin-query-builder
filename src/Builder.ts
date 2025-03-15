@@ -175,7 +175,7 @@ export class Builder {
             this.query += `${this._dot()}elementMap(${keys.map((element) => `'${element}'`).join(', ')})`;
             return this;
         }
-        
+
         if (!keys) {
             this.query += `${this._dot()}elementMap()`;
             return this;
@@ -274,11 +274,20 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#project-step */
-    project(parts: [partA: string, partB: string][] = []) {
+    project(parts: { to: string; by: (builder: Builder) => void }[]) {
+        if (!Array.isArray(parts)) {
+            throw new Error('Parts must be an array');
+        }
+
+        const builderInstances = parts.map(() => new Builder(this.factory));
+
+        parts.forEach((part, index) => part.by(builderInstances[index]));
+
         this.query += `${this._dot()}project(` +
-            `${parts.map(([partA, _]) => `'${partA}'`)}` +
+            `${parts.map((part) => `'${part.to}'`).join(', ')}` +
             `)` +
-            `${parts.map(([_, partB]) => `.by(${partB})`).join('')}`;
+            `${builderInstances.map((builder) => `.by(${builder.toString})`).join('')}`;
+
         return this;
     }
 

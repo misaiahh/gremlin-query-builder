@@ -2,21 +2,16 @@ A gremlin query string create meant for use with the [neptune-data](https://docs
 
 Suported methods are:
 
+Here are the  files for each method of the Builder class:
 
-
-Here are the Markdown files for each method of the Builder class:
-
-**as.()**
-```markdown
-# As
+# As()
 ================
 
 The `as` method is used to assign an alias to a step in the query.
 
 ## Syntax
-```typescript
-as(callbacks: ((builder: Builder) => void)[])
-```
+
+as(name: string)
 
 ## Parameters
 
@@ -27,26 +22,21 @@ as(callbacks: ((builder: Builder) => void)[])
 The `as` method assigns an alias to a step in the query. The alias can be used to reference the step later in the query.
 
 ## Example
-```typescript
+
 builder.V('VERTEX').as('NAME');
-```
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**custom()**
-```markdown
-# Custom
+# Custom()
 ================
 
 The `custom` method is used to add a custom step to the query.
 
 ## Syntax
-```typescript
+
 custom(step: string)
-```
 
 ## Parameters
 
@@ -57,26 +47,22 @@ custom(step: string)
 The `custom` method adds a custom step to the query. The custom step can be any valid Gremlin step.
 
 ## Example
-```typescript
+
 builder.custom('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')');
-```
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**count()**
-```markdown
-# Count
+# Count()
 ================
 
 The `count` method is used to count the number of vertices or edges in the query.
 
 ## Syntax
-```typescript
+
 count()
-```
+
 
 ## Parameters
 
@@ -87,26 +73,23 @@ None
 The `count` method returns the number of vertices or edges in the query.
 
 ## Example
-```typescript
+
 builder.count();
-```
+
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**is()**
-```markdown
-# Is
+# Is()
 ================
 
 The `is` method is used to filter the query based on a condition.
 
 ## Syntax
-```typescript
+
 is(condition: string | number)
-```
+
 
 ## Parameters
 
@@ -117,27 +100,24 @@ is(condition: string | number)
 The `is` method filters the query based on a condition. The condition can be a string or a number.
 
 ## Example
-```typescript
+
 builder.is('gt(2)');
 builder.is(2);
-```
+
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**not()**
-```markdown
-# Not
+# Not()
 ================
 
 The `not` method is used to negate a condition in the query.
 
 ## Syntax
-```typescript
+
 not(condition: (builder: Builder) => void)
-```
+
 
 ## Parameters
 
@@ -148,26 +128,23 @@ not(condition: (builder: Builder) => void)
 The `not` method negates a condition in the query.
 
 ## Example
-```typescript
+
 builder.not((b) => b.has('removed', true).has('name', '\'Alice\''));
-```
+
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**out()**
-```markdown
-# Out
+# Out()
 ================
 
 The `out` method is used to traverse the graph in the outgoing direction.
 
 ## Syntax
-```typescript
+
 out(edge: string)
-```
+
 
 ## Parameters
 
@@ -178,26 +155,22 @@ out(edge: string)
 The `out` method traverses the graph in the outgoing direction.
 
 ## Example
-```typescript
+
 builder.out('knows');
-```
+
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**outE()**
-```markdown
-# OutE
+# OutE()
 ================
 
 The `outE` method is used to traverse the graph in the outgoing edge direction.
 
 ## Syntax
-```typescript
+
 outE(edge: string)
-```
 
 ## Parameters
 
@@ -208,26 +181,21 @@ outE(edge: string)
 The `outE` method traverses the graph in the outgoing edge direction.
 
 ## Example
-```typescript
+
 builder.outE('knows');
-```
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**outV()**
-```markdown
-# OutV
+# OutV()
 ================
 
 The `outV` method is used to traverse the graph in the outgoing vertex direction.
 
 ## Syntax
-```typescript
+
 outV()
-```
 
 ## Parameters
 
@@ -238,26 +206,21 @@ None
 The `outV` method traverses the graph in the outgoing vertex direction.
 
 ## Example
-```typescript
+
 builder.outV();
-```
 
 ## Returns
 
 The `Builder` instance.
-```
 
-**project()**
-```markdown
-# Project
+# Project()
 ================
 
 The `project` method is used to project a set of vertices or edges.
 
 ## Syntax
-```typescript
+
 project(parts: { to: string; by: (builder: Builder) => void }[])
-```
 
 ## Parameters
 
@@ -268,14 +231,13 @@ project(parts: { to: string; by: (builder: Builder) => void }[])
 The `project` method projects a set of vertices or edges.
 
 ## Example
-```typescript
+
 builder.project([
-  { to: 'name', by: (b) => b.values('name') },
-  { to: 'age', by: (b) => b.values('age') }
+  { name: 'name', by: (b) => b.values('name') },
+  { name: 'age', by: (b) => b.values('age') }
 ]);
-```
 
 ## Returns
 
 The `Builder` instance.
-```
+

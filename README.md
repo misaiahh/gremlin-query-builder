@@ -6,7 +6,7 @@ Suported methods are:
 
 Here are the Markdown files for each method of the Builder class:
 
-**as.md**
+**as.()**
 ```markdown
 # As
 ================
@@ -28,10 +28,7 @@ The `as` method assigns an alias to a step in the query. The alias can be used t
 
 ## Example
 ```typescript
-builder.as([
-  (b) => b.values('name'),
-  (b) => b.values('age')
-]);
+builder.V('VERTEX').as('NAME');
 ```
 
 ## Returns
@@ -39,7 +36,7 @@ builder.as([
 The `Builder` instance.
 ```
 
-**custom.md**
+**custom()**
 ```markdown
 # Custom
 ================
@@ -61,7 +58,7 @@ The `custom` method adds a custom step to the query. The custom step can be any 
 
 ## Example
 ```typescript
-builder.custom('a');
+builder.custom('g.V(\'123\').as(\'a\').out(\'knows\').as(\'b\')');
 ```
 
 ## Returns
@@ -69,7 +66,7 @@ builder.custom('a');
 The `Builder` instance.
 ```
 
-**count.md**
+**count()**
 ```markdown
 # Count
 ================
@@ -99,7 +96,7 @@ builder.count();
 The `Builder` instance.
 ```
 
-**is.md**
+**is()**
 ```markdown
 # Is
 ================
@@ -130,7 +127,7 @@ builder.is(2);
 The `Builder` instance.
 ```
 
-**not.md**
+**not()**
 ```markdown
 # Not
 ================
@@ -160,7 +157,7 @@ builder.not((b) => b.has('removed', true).has('name', '\'Alice\''));
 The `Builder` instance.
 ```
 
-**out.md**
+**out()**
 ```markdown
 # Out
 ================
@@ -190,7 +187,7 @@ builder.out('knows');
 The `Builder` instance.
 ```
 
-**outE.md**
+**outE()**
 ```markdown
 # OutE
 ================
@@ -220,7 +217,7 @@ builder.outE('knows');
 The `Builder` instance.
 ```
 
-**outV.md**
+**outV()**
 ```markdown
 # OutV
 ================
@@ -250,7 +247,7 @@ builder.outV();
 The `Builder` instance.
 ```
 
-**project.md**
+**project()**
 ```markdown
 # Project
 ================
@@ -282,4 +279,3 @@ builder.project([
 
 The `Builder` instance.
 ```
-

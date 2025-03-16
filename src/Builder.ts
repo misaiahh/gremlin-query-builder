@@ -185,13 +185,13 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#fold-step */
-    fold(obj = null, bifunction = null) {
+    fold(_obj = null, _bifunction = null) {
         this.query += `${this._dot()}fold()`;
         return this;
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#has-step */
-    has(key: string = '', value: any = true) {
+    has(key: string = '', value: string | number | boolean = true) {
         this.query += `${this._dot()}has('${key}', ${value})`;
         return this;
     }

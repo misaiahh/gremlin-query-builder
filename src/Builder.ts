@@ -274,7 +274,7 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#project-step */
-    project(parts: { to: string; by: (builder: Builder) => void }[]) {
+    project(parts: { name: string; by: (builder: Builder) => void }[]) {
         if (!Array.isArray(parts)) {
             throw new Error('Parts must be an array');
         }
@@ -284,7 +284,7 @@ export class Builder {
         parts.forEach((part, index) => part.by(builderInstances[index]));
 
         this.query += `${this._dot()}project(` +
-            `${parts.map((part) => `'${part.to}'`).join(', ')}` +
+            `${parts.map((part) => `'${part.name}'`).join(', ')}` +
             `)` +
             `${builderInstances.map((builder) => `.by(${builder.toString})`).join('')}`;
 

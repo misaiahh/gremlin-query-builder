@@ -1,5 +1,28 @@
 A gremlin query string create meant for use with the [neptune-data](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/neptunedata/) client provided by AWS.
 
+```
+import { NeptunedataClient, ExecuteGremlinQueryCommand } from "@aws-sdk/client-neptunedata";
+
+const config = {
+  region: 'us-east-1',
+  endpoint: 'https://example.us-east-1.neptune.amazonaws.com',
+};
+const client = new NeptunedataClient(config);
+
+const input = {
+  gremlinQuery: new Factory().create().g.V('123').valueMap().toString,
+  serializer: 'application/vnd.gremlin-v1.0+json;types=false',
+};
+const command = new ExecuteGremlinQueryCommand(input);
+const response = await client.send(command);
+
+client.destroy();
+```
+
+ExecuteGremlinQueryCommand options can be found [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/neptunedata/command/ExecuteGremlinQueryCommand/)
+
+Serializer types can be found [here](https://docs.aws.amazon.com/neptune/latest/userguide/access-graph-gremlin-differences.html#feature-gremlin-differences-serialization)
+
 This project provides links to the [gremlin-tinkerpop](https://tinkerpop.apache.org/docs/3.7.3/reference/) documentation for each suported method. However, this project is not a complete implementation of the Gremlin language nor should it be used as a replacement official documentation.
 
 ### Supported methods:

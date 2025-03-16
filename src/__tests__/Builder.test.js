@@ -335,27 +335,27 @@ describe('Gremlin Query Builder', () => {
         describe('project()', () => {
             it('should generate a single project', () => {
                 const builder = new Factory().create();
-                builder.g.V('123').project([{ to: 'a', by: (b) => b.valueMap() }]);
+                builder.g.V('123').project([{ name: 'a', by: (b) => b.valueMap() }]);
                 assert.strictEqual(builder.toString, "g.V('123').project('a').by(valueMap())");
             });
 
             it('should generate a single by project that works with as()', () => {
                 const builder = new Factory().create();
-                builder.g.V('123').as('V').project([{ to: 'a', by: (b) => b.select('V').valueMap() }]);
+                builder.g.V('123').as('V').project([{ name: 'a', by: (b) => b.select('V').valueMap() }]);
                 assert.strictEqual(builder.toString, "g.V('123').as('V').project('a').by(select('V').valueMap())");
             });
 
             it('should generate a multiple project', () => {
                 const builder = new Factory().create();
-                builder.g.V('123').project([{ to: 'a', by: (b) => b.valueMap() }, { to: 'c', by: (d) => d.valueMap() }]);
+                builder.g.V('123').project([{ name: 'a', by: (b) => b.valueMap() }, { name: 'c', by: (d) => d.valueMap() }]);
                 assert.strictEqual(builder.toString, "g.V('123').project('a','c').by(valueMap()).by(valueMap())");
             });
 
             it('should generate multiple by project that works with as()', () => {
                 const builder = new Factory().create();
                 builder.g.V('123').as('V').project([
-                    { to: 'a', by: (b) => b.select('V').valueMap() },
-                    { to: 'c', by: (d) => d.select('V').valueMap() }
+                    { name: 'a', by: (b) => b.select('V').valueMap() },
+                    { name: 'c', by: (d) => d.select('V').valueMap() }
                 ]);
                 assert.strictEqual(builder.toString, "g.V('123').as('V').project('a','c').by(select('V').valueMap()).by(select('V').valueMap())");
             });

@@ -122,15 +122,21 @@ export class Builder {
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#and-step */
-    and(callback: ((builder: Builder) => void) | undefined = undefined) {
-        if (!callback) {
+    and(input: ((builder: Builder) => void) | ((builder: Builder) => void)[] | undefined = undefined) {
+        if (typeof input === 'undefined') {
             this.query += `${this._dot()}and()`;
-            return this;
+        } else if (typeof input === 'function') {
+            const builder = Factory.from(this.factory);
+            input(builder);
+            this.query += `${this._dot()}and(${builder.toString})`;
+        } else if (Array.isArray(input)) {
+            const builderInstances = input.map(() => new Builder(this.factory));
+            input.forEach((callback, index) => callback(builderInstances[index]));
+            const queryString = `${this._dot()}and(${builderInstances.map((builder) => builder.toString).join(',')})`;
+            this.query += queryString;
+        } else {
+            throw new Error('[and()] Input must be undefined, a function, or an array of functions');
         }
-
-        const builder = Factory.from(this.factory);
-        callback(builder);
-        this.query += `${this._dot()}and(${builder.toString})`;
 
         return this;
     }

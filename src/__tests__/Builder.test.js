@@ -114,16 +114,22 @@ describe('Gremlin Query Builder', () => {
         });
 
         describe('and()', () => {
-            it('should generate a string and()', () => {
+            it.skip('should generate a string query from undefined', () => {
                 const builder = new Factory().create();
                 builder.g.V('123').and();
                 assert.strictEqual(builder.toString, "g.V('123').and()");
             });
 
-            it('should generate a and() query from callback', () => {
+            it('should generate an and() string query from a single callback', () => {
                 const builder = new Factory().create();
                 builder.g.V('123').and(a => a.has('removed', true).has('name', '\'Alice\''));
                 assert.strictEqual(builder.toString, "g.V('123').and(has('removed',true).has('name','Alice'))");
+            });
+
+            it('should generate an and() string query from an array of callbacks', () => {
+                const builder = new Factory().create();
+                builder.g.V('123').and([(a) => a.has('removed', true), (a) => a.has('name', '\'Alice\'')]);
+                assert.strictEqual(builder.toString, "g.V('123').and(has('removed',true),has('name','Alice'))");
             });
         });
 

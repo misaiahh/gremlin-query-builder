@@ -125,20 +125,21 @@ export class Builder {
     and(input: ((builder: Builder) => void) | ((builder: Builder) => void)[] | undefined = undefined) {
         if (typeof input === 'undefined') {
             this.query += `${this._dot()}and()`;
+            return this;
         } else if (typeof input === 'function') {
             const builder = Factory.from(this.factory);
             input(builder);
             this.query += `${this._dot()}and(${builder.toString})`;
-        } else if (Array.isArray(input)) {
+            return this;
+        } else if (Array.isArray(input) && input.every((item) => typeof item === 'function') && input.length > 0) {
             const builderInstances = input.map(() => new Builder(this.factory));
             input.forEach((callback, index) => callback(builderInstances[index]));
             const queryString = `${this._dot()}and(${builderInstances.map((builder) => builder.toString).join(',')})`;
             this.query += queryString;
-        } else {
-            throw new Error('[and()] Input must be undefined, a function, or an array of functions');
+            return this;
         }
 
-        return this;
+        throw new Error('\'input\' must be undefined, a function, or an array of functions');
     }
 
     /** @tutorial https://tinkerpop.apache.org/docs/3.7.3/reference/#as-step */
